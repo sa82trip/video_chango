@@ -1,0 +1,13 @@
+@tailwind base;
+
+.btn {
+	@apply bg-red-700 focus:outline-none py-1 px-2 mt-3 ml-1 text-white transition-colors font-semibold mb-3 rounded-md hover:bg-red-400;
+}
+
+.container{
+	@apply max-w-full max-h-full object-contain !important;
+}
+
+@tailwind components;
+
+@tailwind utilities;
