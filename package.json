@@ -28,8 +28,10 @@
     "youtube-search": "^1.1.6"
   },
   "scripts": {
+    "tailwind:prodbuild": "NODE_ENV=production npm run tailwind:build",
     "tailwind:build": "tailwind build ./src/styles/tailwind.css -o ./src/styles/styles.css",
-    "start": "npm run tailwind:build & react-scripts start",
+    "start": "CI=false npm run tailwind:build & react-scripts start",
+    "prebuild": "npm run tailwind:prodbuild",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
