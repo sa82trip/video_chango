@@ -8,6 +8,10 @@
 	@apply max-w-full max-h-full object-contain !important;
 }
 
+.formInput{
+	@apply rounded-sm bg-gray-100 px-5 py-3 font-medium text-xl mt-1;
+}
+
 @tailwind components;
 
 @tailwind utilities;

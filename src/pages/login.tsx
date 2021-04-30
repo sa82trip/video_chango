@@ -71,14 +71,17 @@ export const Login: React.FC = () => {
       });
   };
   return (
-    <div className="mt-36 mx-auto max-w-sm flex flex-col">
-      <h1 className="font-semibold text-2xl text-white bg-gray-800 text-center">
+    <div className="mt-52 mx-auto max-w-sm flex flex-col">
+      <h1 className="font-semibold text-2xl text-white bg-gray-800 text-center rounded-sm">
         Welcome To VC
       </h1>
+      <span className="text-white font-semibold bg-gray-700 text-center">
+        Login
+      </span>
       <form className="flex flex-col" onSubmit={handleSubmit(loginHandler)}>
         <input
           placeholder="email"
-          className="rounded-sm bg-gray-100 px-2 font-medium xl mt-1"
+          className="formInput"
           {...register("email", {
             required: true,
             pattern: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
@@ -93,17 +96,18 @@ export const Login: React.FC = () => {
         )}
         <input
           placeholder="password"
-          className="rounded-sm bg-gray-100 px-2 font-medium xl mt-1 "
+          className="formInput"
           {...register("password", { required: true, minLength: 6 })}
         />
         {errors.password && "please check password"}
-        <button className={`bg-red-100 px-5 mt-1`} type="submit">
-          login
+        <button className={`bg-red-100 btn my-1 text-black`} type="submit">
+          Login
         </button>
-        <Link to="/create-account">
-          <button className={`bg-gray-500 text-white font-bold px-5 mt-1 `}>
-            CreateAccount
-          </button>
+        <Link
+          className={`btn bg-gray-500 my-1 text-white font-bold text-center`}
+          to="/create-account"
+        >
+          CreateAccount
         </Link>
       </form>
     </div>

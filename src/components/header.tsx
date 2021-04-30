@@ -51,7 +51,6 @@ export const Header: React.FC<IHeaderProps> = ({
           >
             import from clipboard
           </button>
-
           <button onClick={() => logoutHandler()}>logout</button>
         </div>
       </div>

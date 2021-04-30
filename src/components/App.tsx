@@ -13,7 +13,12 @@ import { firestore } from "../firebase.js";
 import "../styles/styles.css";
 import { VidPlayer, Vid_block_type } from "./vid_player";
 import Modal from "react-modal";
-import { BrowserRouter as Router, useHistory } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  useHistory,
+} from "react-router-dom";
 import { CreateAccount } from "../pages/create-account";
 import { ILoginFormInput, Login } from "../pages/login";
 import firebase from "firebase";
@@ -198,9 +203,14 @@ export const App = () => {
             />
           </div>
         ) : (
-          <>
-            <Login />
-          </>
+          <Switch>
+            <Route path="/create-account">
+              <CreateAccount />
+            </Route>
+            <Route path="/" exact>
+              <Login />
+            </Route>
+          </Switch>
         )}
       </Router>
     </UserContext.Provider>
