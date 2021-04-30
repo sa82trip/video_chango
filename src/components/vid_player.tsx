@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ReactPlayer from "react-player";
 import { firestore } from "../firebase";
 
@@ -8,7 +8,7 @@ export interface Vid_block_type {
   rating: number;
   archived: boolean;
   handleDeleteButtonClick?: (id: string) => void;
-  toggleModal?: (url: string) => void;
+  toggleModal?: ({}: Vid_block_type) => void;
   playedSeconds: number;
   //createdAt: Date;
 }
@@ -23,8 +23,10 @@ export const VidPlayer: React.FC<Vid_block_type> = ({
   //createdAt,
 }) => {
   const [playedSec, setPlayedSec] = useState(0);
+  const [playing, setPlaying] = useState(false);
   const handleUpdateWatchedVideo = () => {
     const currentNum = playerRef.current?.getCurrentTime();
+    setPlayedSec(playedSec && playedSec | 0);
     const flooredNum = Math.floor((currentNum && currentNum) || 0);
     const watchedVideo = firestore.collection("vid-list").doc(id);
     watchedVideo.get().then((doc) => {
@@ -44,15 +46,14 @@ export const VidPlayer: React.FC<Vid_block_type> = ({
   return (
     <div id={id} className="font-semibold text-white">
       <ReactPlayer
+        onReady={(e) => setPlaying(true)}
+        playing={playing}
         ref={playerRef}
         light={true}
         controls={true}
-        width={`${() => document.getElementById(`${id}`)?.offsetWidth}`}
+        // width={`${() => document.getElementById(`${id}`)?.offsetWidth}`}
+        width={"100%"}
         url={url}
-        onProgress={(played) => {
-          console.log(played.playedSeconds);
-          setPlayedSec(played.playedSeconds);
-        }}
         onPause={() => {
           handleUpdateWatchedVideo();
         }}
@@ -79,7 +80,10 @@ export const VidPlayer: React.FC<Vid_block_type> = ({
           <button className="btn">archive</button>
           <button
             className="btn bg-black text-yellow-300 font-semibold"
-            onClick={() => toggleModal && toggleModal(url)}
+            onClick={() =>
+              toggleModal &&
+              toggleModal({ id, url, rating, archived, playedSeconds })
+            }
           >
             Theather Mode
           </button>

@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { firestore } from "../firebase";
-import { Vid_block_type } from "./vid_player";
+import React from "react";
 
 interface IHeaderProps {
   searchTerm: string;
@@ -17,25 +15,25 @@ export const Header: React.FC<IHeaderProps> = ({
   return (
     <>
       <div className="flex items-center w-full bg-gray-500 pt-5 pb-3">
-        <div className="mx-auto w-1/2 flex justify-center">
+        <div className="flex flex-col mx-auto md:w-1/2 md:flex-row justify-center">
           <input
             type="text"
             name="search-input"
             value={searchTerm}
             onChange={handleChange}
-            className="w-7/12 text-xl border-2 border-gray-800 my-3 rounded-md"
+            className="md:w-7/12 text-xl border-2 focus:outline-none border-gray-800 my-3 rounded-md"
           />
           <button
-            className="bg-red-700 py-1 px-2 mt-3 ml-1 text-white font-semibold mb-3 rounded-md"
+            className="bg-red-700 py-1 px-2 ml-2 text-white font-semibold mb-3 rounded-md"
             onClick={() => handleSearch(searchTerm)}
           >
             Search
           </button>
           <button
-            className="btn bg-green-500"
+            className="btn bg-green-500 mt-0 ml-2"
             onClick={() => addVideoToWatchLaterList()}
           >
-            input data test
+            import from clipboard
           </button>
         </div>
       </div>

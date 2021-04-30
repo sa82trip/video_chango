@@ -4,7 +4,7 @@ import { VidPlayer, Vid_block_type } from "./vid_player";
 interface IProps {
   vid_list: Vid_block_type[];
   handleDeleteButtonClick?: (id: string) => void;
-  toggleModal: (url: string) => void;
+  toggleModal: ({}: Vid_block_type) => void;
 }
 
 export const VidContainer: React.FC<IProps> = ({

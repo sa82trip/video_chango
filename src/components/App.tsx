@@ -9,7 +9,8 @@ import Modal from "react-modal";
 
 const customStyles = {
   content: {
-    width: "55%",
+    width: "80%",
+    height: "80%",
     background: "gray",
     top: "50%",
     left: "50%",
@@ -25,6 +26,10 @@ export const App = () => {
   const [vids, setVids] = useState<Vid_block_type[]>([]);
   const [IsModalOpen, setIsOpen] = useState(false);
   const [modalVideoUrl, setModalVideoUrl] = useState("");
+  const [modalRating, setModalRating] = useState(3);
+  const [modalArchived, setModalArchived] = useState(false);
+  const [modalPlayedSeconds, setModalPlayedSeconds] = useState(0);
+  const [modalId, setModalId] = useState("");
 
   const opts: youtubeSearch.YouTubeSearchOptions = {
     maxResults: 1,
@@ -72,10 +77,20 @@ export const App = () => {
     console.log("clicked!");
   };
 
-  const toggleModal = (url?: string) => {
-    if (url) {
-      setModalVideoUrl(url);
-      console.log(url);
+  const toggleModal = (video?: Vid_block_type) => {
+    if (video) {
+      setModalVideoUrl(video.url);
+      setModalId(video.id);
+      setModalPlayedSeconds(video.playedSeconds);
+      setModalArchived(video.archived);
+      setModalRating(video.rating);
+      console.log(
+        video.url,
+        video.id,
+        video.playedSeconds,
+        video.archived,
+        video.rating
+      );
     }
     setIsOpen(!IsModalOpen);
   };
@@ -115,7 +130,7 @@ export const App = () => {
       console.log("no right url");
     }
   };
-
+  Modal.setAppElement("#root");
   return (
     <div className="bg-red-50">
       {/*<button onClick={() => toggleModal()}>Open Modal</button>*/}
@@ -129,11 +144,11 @@ export const App = () => {
         </button>
         <div className="shadow-md">
           <VidPlayer
-            playedSeconds={0}
+            playedSeconds={modalPlayedSeconds}
             url={modalVideoUrl ? modalVideoUrl : ""}
-            id={"testId"}
-            rating={3}
-            archived={false}
+            id={modalId}
+            rating={modalRating}
+            archived={modalArchived}
           />
         </div>
       </Modal>
