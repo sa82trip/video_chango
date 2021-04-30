@@ -1,4 +1,6 @@
 import React from "react";
+import firebase from "firebase";
+import { useHistory } from "react-router";
 
 interface IHeaderProps {
   searchTerm: string;
@@ -12,6 +14,20 @@ export const Header: React.FC<IHeaderProps> = ({
   handleSearch,
   addVideoToWatchLaterList,
 }) => {
+  const history = useHistory();
+  const logoutHandler = () => {
+    firebase
+      .auth()
+      .signOut()
+      .then(() => {
+        console.log("logged out");
+        history.go(0);
+        // Sign-out successful.
+      })
+      .catch((error) => {
+        // An error happened.
+      });
+  };
   return (
     <>
       <div className="flex items-center w-full bg-gray-500 pt-5 pb-3">
@@ -35,6 +51,8 @@ export const Header: React.FC<IHeaderProps> = ({
           >
             import from clipboard
           </button>
+
+          <button onClick={() => logoutHandler()}>logout</button>
         </div>
       </div>
     </>

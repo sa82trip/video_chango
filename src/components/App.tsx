@@ -1,4 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  createContext,
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { Header } from "./header";
 import { VidContainer } from "./vid-container";
 import youtubeSearch, { YouTubeSearchResults } from "youtube-search";
@@ -6,6 +13,10 @@ import { firestore } from "../firebase.js";
 import "../styles/styles.css";
 import { VidPlayer, Vid_block_type } from "./vid_player";
 import Modal from "react-modal";
+import { BrowserRouter as Router, useHistory } from "react-router-dom";
+import { CreateAccount } from "../pages/create-account";
+import { ILoginFormInput, Login } from "../pages/login";
+import firebase from "firebase";
 
 const customStyles = {
   content: {
@@ -21,6 +32,12 @@ const customStyles = {
   },
 };
 
+interface AppContextInterface {
+  setLoggedIn: Dispatch<SetStateAction<boolean>>;
+  setLoading: Dispatch<SetStateAction<boolean>>;
+}
+export const UserContext = createContext<AppContextInterface | null>(null);
+
 export const App = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [vids, setVids] = useState<Vid_block_type[]>([]);
@@ -30,6 +47,13 @@ export const App = () => {
   const [modalArchived, setModalArchived] = useState(false);
   const [modalPlayedSeconds, setModalPlayedSeconds] = useState(0);
   const [modalId, setModalId] = useState("");
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const value = useMemo(() => ({ setLoggedIn, setLoading }), [
+    setLoggedIn,
+    setLoading,
+  ]);
 
   const opts: youtubeSearch.YouTubeSearchOptions = {
     maxResults: 1,
@@ -40,8 +64,14 @@ export const App = () => {
     console.log(e.target.value);
     setSearchTerm(e.target.value);
   };
+  const history = useHistory();
   useEffect(() => {
     fetchData();
+    console.log(firebase.auth().currentUser?.uid);
+    if (firebase.auth().currentUser?.uid === localStorage.getItem("key")) {
+      setLoggedIn(true);
+      history.push("/");
+    }
   }, []);
 
   const fetchData = async () => {
@@ -132,37 +162,47 @@ export const App = () => {
   };
   Modal.setAppElement("#root");
   return (
-    <div className="bg-red-50">
-      {/*<button onClick={() => toggleModal()}>Open Modal</button>*/}
-      <Modal
-        style={customStyles}
-        isOpen={IsModalOpen}
-        onRequestClose={() => toggleModal()}
-      >
-        <button className="btn" onClick={() => toggleModal()}>
-          close
-        </button>
-        <div className="shadow-md">
-          <VidPlayer
-            playedSeconds={modalPlayedSeconds}
-            url={modalVideoUrl ? modalVideoUrl : ""}
-            id={modalId}
-            rating={modalRating}
-            archived={modalArchived}
-          />
-        </div>
-      </Modal>
-      <Header
-        addVideoToWatchLaterList={addVideoToWatchLaterList}
-        searchTerm={searchTerm}
-        handleSearch={handleSearch}
-        handleChange={handleChange}
-      />
-      <VidContainer
-        toggleModal={toggleModal}
-        handleDeleteButtonClick={handleDeleteButtonClick}
-        vid_list={vids}
-      />
-    </div>
+    <UserContext.Provider value={value}>
+      <Router>
+        {loggedIn ? (
+          <div className="bg-red-50">
+            {/*<button onClick={() => toggleModal()}>Open Modal</button>*/}
+            <Modal
+              style={customStyles}
+              isOpen={IsModalOpen}
+              onRequestClose={() => toggleModal()}
+            >
+              <button className="btn" onClick={() => toggleModal()}>
+                close
+              </button>
+              <div className="shadow-md">
+                <VidPlayer
+                  playedSeconds={modalPlayedSeconds}
+                  url={modalVideoUrl ? modalVideoUrl : ""}
+                  id={modalId}
+                  rating={modalRating}
+                  archived={modalArchived}
+                />
+              </div>
+            </Modal>
+            <Header
+              addVideoToWatchLaterList={addVideoToWatchLaterList}
+              searchTerm={searchTerm}
+              handleSearch={handleSearch}
+              handleChange={handleChange}
+            />
+            <VidContainer
+              toggleModal={toggleModal}
+              handleDeleteButtonClick={handleDeleteButtonClick}
+              vid_list={vids}
+            />
+          </div>
+        ) : (
+          <>
+            <Login />
+          </>
+        )}
+      </Router>
+    </UserContext.Provider>
   );
 };
