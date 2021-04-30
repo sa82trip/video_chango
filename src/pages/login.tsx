@@ -84,6 +84,7 @@ export const Login: React.FC = () => {
       <form className="flex flex-col" onSubmit={handleSubmit(loginHandler)}>
         <input
           placeholder="email"
+          type="email"
           className="formInput"
           {...register("email", {
             required: true,
@@ -100,6 +101,7 @@ export const Login: React.FC = () => {
         <input
           placeholder="password"
           className="formInput"
+          type="password"
           {...register("password", { required: true, minLength: 6 })}
         />
         {errors.password && "please check password"}

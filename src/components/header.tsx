@@ -54,7 +54,7 @@ export const Header: React.FC<IHeaderProps> = ({
         </div>
         <div className="content-end">
           <button
-            className="btn bg-gray-800 text-white font-semibold"
+            className="mr-3 btn bg-gray-800 text-white font-semibold"
             onClick={() => logoutHandler()}
           >
             logout

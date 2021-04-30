@@ -58,6 +58,7 @@ export const CreateAccount = () => {
         <input
           placeholder="email"
           className="formInput"
+          type="email"
           {...register("email", {
             required: true,
             pattern: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
@@ -71,6 +72,7 @@ export const CreateAccount = () => {
           <h3 className="text-red-400 font-semibold">put valid email</h3>
         )}
         <input
+          type="password"
           placeholder="password"
           className="formInput"
           {...register("password", { required: true, minLength: 6 })}
