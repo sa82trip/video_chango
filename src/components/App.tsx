@@ -40,8 +40,10 @@ const customStyles = {
 interface AppContextInterface {
   setLoggedIn: Dispatch<SetStateAction<boolean>>;
   setLoading: Dispatch<SetStateAction<boolean>>;
+  setLoggedInUser: Dispatch<SetStateAction<any>>;
 }
 export const UserContext = createContext<AppContextInterface | null>(null);
+export const LoggedInUserCtx = createContext<firebase.User | null>(null);
 
 export const App = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -54,10 +56,12 @@ export const App = () => {
   const [modalId, setModalId] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [loggedInUser, setLoggedInUser] = useState(firebase.auth().currentUser);
 
-  const value = useMemo(() => ({ setLoggedIn, setLoading }), [
+  const value = useMemo(() => ({ setLoggedIn, setLoading, setLoggedInUser }), [
     setLoggedIn,
     setLoading,
+    setLoggedInUser,
   ]);
 
   const opts: youtubeSearch.YouTubeSearchOptions = {
@@ -72,18 +76,18 @@ export const App = () => {
   const history = useHistory();
   useEffect(() => {
     fetchData();
-    console.log(firebase.auth().currentUser?.uid);
-    if (firebase.auth().currentUser?.uid === localStorage.getItem("key")) {
-      setLoggedIn(true);
-      history.push("/");
-    }
-  }, []);
+  }, [loggedIn]);
 
   const fetchData = async () => {
+    console.log(loggedIn);
+    if (!loggedIn) {
+      return;
+    }
     let testVids: Vid_block_type[] = [];
+    console.log("email", loggedInUser?.email);
     await firestore
       .collection("vid-list")
-      .where("id", "==", "joon")
+      .where("id", "==", loggedInUser?.email)
       .get()
       .then((docs) =>
         docs.forEach((doc) => {
@@ -146,23 +150,25 @@ export const App = () => {
     console.log(copiedText.search("http"));
     if (copiedText.search("http") !== -1) {
       console.log(copiedText);
-      const videoThatWillWatchLater: Vid_block_type = {
-        url: copiedText,
-        id: "joon",
-        rating: 3,
-        archived: false,
-        playedSeconds: 0,
-        //        createdAt: new Date(),
-      };
-      await firestore
-        .collection("vid-list")
-        .add(videoThatWillWatchLater)
-        .then(() => {
-          const newVidList = [...vids, videoThatWillWatchLater];
-          setVids(newVidList);
-        });
-    } else {
-      console.log("no right url");
+      if (loggedInUser) {
+        const videoThatWillWatchLater: Vid_block_type = {
+          url: copiedText,
+          id: (loggedInUser.email && loggedInUser.email) || "test",
+          rating: 3,
+          archived: false,
+          playedSeconds: 0,
+          //        createdAt: new Date(),
+        };
+        await firestore
+          .collection("vid-list")
+          .add(videoThatWillWatchLater)
+          .then(() => {
+            const newVidList = [...vids, videoThatWillWatchLater];
+            setVids(newVidList);
+          });
+      } else {
+        console.log("no right url");
+      }
     }
   };
   Modal.setAppElement("#root");

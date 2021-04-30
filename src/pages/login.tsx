@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { Link, useHistory } from "react-router-dom";
 import { CreateAccount } from "./create-account";
 import firebase from "firebase";
-import { UserContext } from "../components/App";
+import { LoggedInUserCtx, UserContext } from "../components/App";
 
 export interface ILoginFormInput {
   email: string;
@@ -25,6 +25,7 @@ export const Login: React.FC = () => {
   } = useForm<ILoginFormInput>({ mode: "onChange" });
 
   const appCtx = useContext(UserContext);
+  const loggedInUserCtx = useContext(LoggedInUserCtx);
 
   const history = useHistory();
   console.log(watch());
@@ -37,6 +38,7 @@ export const Login: React.FC = () => {
         firebase.auth().onAuthStateChanged((user) => {
           if (user) {
             console.log(user);
+            appCtx?.setLoggedInUser(user);
             appCtx?.setLoggedIn((prev) => !prev);
           }
         });
@@ -51,6 +53,7 @@ export const Login: React.FC = () => {
         firebase.auth().onAuthStateChanged((user) => {
           if (user) {
             appCtx?.setLoggedIn(true);
+            appCtx?.setLoggedInUser(user);
           } else {
             firebase
               .auth()
