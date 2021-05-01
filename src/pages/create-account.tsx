@@ -44,7 +44,7 @@ export const CreateAccount = () => {
     console.log(email, password);
   };
   return (
-    <div className="mt-52 mx-auto max-w-sm flex flex-col">
+    <div className="mt-32 mx-auto max-w-sm flex flex-col px-2 shadow-lg">
       <h1 className="font-semibold text-2xl text-white bg-gray-800 text-center">
         Welcome To VC
       </h1>
@@ -78,12 +78,15 @@ export const CreateAccount = () => {
           {...register("password", { required: true, minLength: 6 })}
         />
         {errors.password && "please check password"}
-        <button className={`btn bg-red-100 px-5 my-1 text-black`} type="submit">
+        <button
+          className={`btn bg-red-100 px-5 my-1 text-black mx-0`}
+          type="submit"
+        >
           Create Account
         </button>
         <Link
           to="/"
-          className={`btn bg-gray-500 text-white font-bold px-5 my-1 text-center`}
+          className={`btn bg-gray-500 text-white font-bold px-5 mt-1 text-center mx-0`}
         >
           Login
         </Link>

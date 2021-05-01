@@ -1,6 +1,6 @@
 import React from "react";
 import firebase from "firebase";
-import { useHistory } from "react-router";
+import { useHistory } from "react-router-dom";
 
 interface IHeaderProps {
   searchTerm: string;

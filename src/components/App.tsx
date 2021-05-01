@@ -20,13 +20,14 @@ import {
   useHistory,
 } from "react-router-dom";
 import { CreateAccount } from "../pages/create-account";
-import { ILoginFormInput, Login } from "../pages/login";
 import firebase from "firebase";
+import { LoggedOutRoutes } from "../routes/logged-out-routes";
+import { SearchedVideos } from "../pages/searched-videos";
 
 const customStyles = {
   content: {
     width: "80%",
-    height: "80%",
+    height: "80vh",
     background: "gray",
     top: "50%",
     left: "50%",
@@ -84,48 +85,59 @@ export const App = () => {
       return;
     }
     let testVids: Vid_block_type[] = [];
-    console.log("email", loggedInUser?.email);
     await firestore
       .collection("vid-list")
-      .where("id", "==", loggedInUser?.email)
+      .where("userEmail", "==", loggedInUser?.email)
       .get()
       .then((docs) =>
         docs.forEach((doc) => {
           testVids.push({
             id: doc.id,
+            userEmail: doc.data()!.userEmail,
             url: doc.data()!.url,
             archived: doc.data()!.archived,
             rating: doc.data()!.rating,
             playedSeconds: doc.data()!.playedSeconds,
+            createdAt: doc.data()!.createdAt,
           });
-          console.log(doc.id);
+          console.log(testVids);
         })
       );
     //doc("vid-list-id");
     setVids(testVids);
   };
 
-  const handleSearch = (searchTerm: string) => {
-    youtubeSearch(searchTerm, opts, (err, results) => {
-      if (err) return console.log(err);
-      if (results) {
-        //setVids(results);
-        console.dir(results);
-      }
-    });
-    console.log("clicked!");
+  const handleSearch = async (searchTerm: string): Promise<void> => {
+    console.log(history);
+    if (history) {
+      history.push({
+        pathname: "/search",
+        search: `?term=${searchTerm}`,
+      });
+    } else {
+      console.log(this);
+    }
+
+    //    await youtubeSearch(searchTerm, opts, (err, results) => {
+    //      if (err) return console.log(err);
+    //      if (results) {
+    //        //setVids(results);
+    //        console.dir(results);
+    //      }
+    //    });
+    //    console.log("clicked!");
   };
 
   const toggleModal = (video?: Vid_block_type) => {
     if (video) {
       setModalVideoUrl(video.url);
-      setModalId(video.id);
+      setModalId(video.userEmail);
       setModalPlayedSeconds(video.playedSeconds);
       setModalArchived(video.archived);
       setModalRating(video.rating);
       console.log(
         video.url,
-        video.id,
+        video.userEmail,
         video.playedSeconds,
         video.archived,
         video.rating
@@ -145,19 +157,18 @@ export const App = () => {
   };
 
   const addVideoToWatchLaterList = async () => {
-    let copiedText = "";
-    copiedText = await navigator.clipboard.readText();
+    const copiedText = await navigator.clipboard.readText();
     console.log(copiedText.search("http"));
     if (copiedText.search("http") !== -1) {
       console.log(copiedText);
       if (loggedInUser) {
         const videoThatWillWatchLater: Vid_block_type = {
           url: copiedText,
-          id: (loggedInUser.email && loggedInUser.email) || "test",
+          userEmail: (loggedInUser.email && loggedInUser.email) || "test",
           rating: 3,
           archived: false,
           playedSeconds: 0,
-          //        createdAt: new Date(),
+          createdAt: new Date(),
         };
         await firestore
           .collection("vid-list")
@@ -176,47 +187,47 @@ export const App = () => {
     <UserContext.Provider value={value}>
       <Router>
         {loggedIn ? (
-          <div className="bg-red-50">
-            {/*<button onClick={() => toggleModal()}>Open Modal</button>*/}
-            <Modal
-              style={customStyles}
-              isOpen={IsModalOpen}
-              onRequestClose={() => toggleModal()}
-            >
-              <button className="btn" onClick={() => toggleModal()}>
-                close
-              </button>
-              <div className="shadow-md">
-                <VidPlayer
-                  playedSeconds={modalPlayedSeconds}
-                  url={modalVideoUrl ? modalVideoUrl : ""}
-                  id={modalId}
-                  rating={modalRating}
-                  archived={modalArchived}
+          <Switch>
+            <Route path="/" exact>
+              <div className="bg-red-50">
+                {/*<button onClick={() => toggleModal()}>Open Modal</button>*/}
+                <Modal
+                  style={customStyles}
+                  isOpen={IsModalOpen}
+                  onRequestClose={() => toggleModal()}
+                >
+                  <button className="btn" onClick={() => toggleModal()}>
+                    close
+                  </button>
+                  <div className="shadow-md">
+                    <VidPlayer
+                      playedSeconds={modalPlayedSeconds}
+                      url={modalVideoUrl ? modalVideoUrl : ""}
+                      userEmail={modalId}
+                      rating={modalRating}
+                      archived={modalArchived}
+                    />
+                  </div>
+                </Modal>
+                <Header
+                  addVideoToWatchLaterList={addVideoToWatchLaterList}
+                  searchTerm={searchTerm}
+                  handleSearch={handleSearch}
+                  handleChange={handleChange}
+                />
+                <VidContainer
+                  toggleModal={toggleModal}
+                  handleDeleteButtonClick={handleDeleteButtonClick}
+                  vid_list={vids}
                 />
               </div>
-            </Modal>
-            <Header
-              addVideoToWatchLaterList={addVideoToWatchLaterList}
-              searchTerm={searchTerm}
-              handleSearch={handleSearch}
-              handleChange={handleChange}
-            />
-            <VidContainer
-              toggleModal={toggleModal}
-              handleDeleteButtonClick={handleDeleteButtonClick}
-              vid_list={vids}
-            />
-          </div>
-        ) : (
-          <Switch>
-            <Route path="/create-account">
-              <CreateAccount />
             </Route>
-            <Route path="/" exact>
-              <Login />
+            <Route path="/search">
+              <SearchedVideos />
             </Route>
           </Switch>
+        ) : (
+          <LoggedOutRoutes />
         )}
       </Router>
     </UserContext.Provider>

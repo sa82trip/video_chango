@@ -26,7 +26,7 @@ export const VidContainer: React.FC<IProps> = ({
   }, []);
 
   return (
-    <div className="max-w-full mx-auto bg-gray-800">
+    <div className="max-w-full mx-auto bg-gray-800 h-200">
       {/*header
       <div className="flex items-center w-full bg-gray-500 py-5">
         <div className="mx-auto w-1/2 flex justify-center">
@@ -60,14 +60,15 @@ export const VidContainer: React.FC<IProps> = ({
           {vid_list
             .filter((one) => one.url !== "")
             .map((one) => (
-              <div key={one.id} className="bg-gray-600">
+              <div key={one.id!} className="bg-gray-600">
                 <VidPlayer
+                  id={one.id}
                   toggleModal={toggleModal}
                   handleDeleteButtonClick={handleDeleteButtonClick}
                   url={one.url}
                   archived={one.archived}
-                  // createdAt={one.createdAt}
-                  id={one.id}
+                  createdAt={one.createdAt}
+                  userEmail={one.userEmail}
                   rating={one.rating}
                   playedSeconds={one.playedSeconds}
                 />

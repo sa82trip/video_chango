@@ -74,7 +74,7 @@ export const Login: React.FC = () => {
       });
   };
   return (
-    <div className="mt-52 mx-auto max-w-sm flex flex-col">
+    <div className="mt-32 mx-auto max-w-sm flex flex-col px-2 shadow-lg">
       <h1 className="font-semibold text-2xl text-white bg-gray-800 text-center rounded-sm">
         Welcome To VC
       </h1>
@@ -105,11 +105,11 @@ export const Login: React.FC = () => {
           {...register("password", { required: true, minLength: 6 })}
         />
         {errors.password && "please check password"}
-        <button className={`bg-red-100 btn my-1 text-black`} type="submit">
+        <button className={`bg-red-100 btn my-1 text-black mx-0`} type="submit">
           Login
         </button>
         <Link
-          className={`btn bg-gray-500 my-1 text-white font-bold text-center`}
+          className={`btn bg-gray-500 mt-1 text-white font-bold text-center mx-0`}
           to="/create-account"
         >
           CreateAccount

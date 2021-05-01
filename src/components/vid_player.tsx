@@ -3,28 +3,32 @@ import ReactPlayer from "react-player";
 import { firestore } from "../firebase";
 
 export interface Vid_block_type {
+  id?: string;
   url: string;
-  id: string;
+  userEmail: string;
   rating: number;
   archived: boolean;
   handleDeleteButtonClick?: (id: string) => void;
   toggleModal?: ({}: Vid_block_type) => void;
   playedSeconds: number;
-  //createdAt: Date;
+  createdAt?: Date;
 }
 export const VidPlayer: React.FC<Vid_block_type> = ({
-  url,
   id,
+  url,
+  userEmail,
   rating,
   archived,
   handleDeleteButtonClick,
   toggleModal,
   playedSeconds,
-  //createdAt,
+  createdAt,
 }) => {
   const [playedSec, setPlayedSec] = useState(0);
   const [playing, setPlaying] = useState(false);
+
   const handleUpdateWatchedVideo = () => {
+    console.log("id", id);
     const currentNum = playerRef.current?.getCurrentTime();
     setPlayedSec(playedSec && playedSec | 0);
     const flooredNum = Math.floor((currentNum && currentNum) || 0);
@@ -34,6 +38,7 @@ export const VidPlayer: React.FC<Vid_block_type> = ({
       watchedVideo.set({ ...doc.data(), playedSeconds: flooredNum });
     });
   };
+
   const playerRef = useRef<ReactPlayer>(null);
   const handleSeekTo = () => {
     console.log(playedSeconds);
@@ -44,7 +49,7 @@ export const VidPlayer: React.FC<Vid_block_type> = ({
     }
   };
   return (
-    <div id={id} className="font-semibold text-white">
+    <div id={id} className="font-semibold text-white mx-1">
       <ReactPlayer
         onReady={(e) => setPlaying(true)}
         playing={playing}
@@ -55,6 +60,9 @@ export const VidPlayer: React.FC<Vid_block_type> = ({
         width={"100%"}
         url={url}
         onPause={() => {
+          handleUpdateWatchedVideo();
+        }}
+        onEnded={() => {
           handleUpdateWatchedVideo();
         }}
       />
@@ -82,14 +90,21 @@ export const VidPlayer: React.FC<Vid_block_type> = ({
             className="btn bg-black text-yellow-300 font-semibold"
             onClick={() =>
               toggleModal &&
-              toggleModal({ id, url, rating, archived, playedSeconds })
+              toggleModal({
+                id,
+                userEmail,
+                url,
+                rating,
+                archived,
+                playedSeconds,
+              })
             }
           >
             Theather Mode
           </button>
           <button
             onClick={() =>
-              handleDeleteButtonClick && handleDeleteButtonClick(id)
+              handleDeleteButtonClick && handleDeleteButtonClick(id!)
             }
             className="btn"
           >
