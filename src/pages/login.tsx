@@ -57,27 +57,22 @@ export const Login: React.FC = () => {
       .auth()
       .setPersistence(firebase.auth.Auth.Persistence.SESSION)
       .then(() => {
-        firebase.auth().onAuthStateChanged((user) => {
-          if (user) {
+        firebase
+          .auth()
+          .signInWithEmailAndPassword(data.email, data.password)
+          .then((userCredential) => {
+            // Signed in
+            var user = userCredential.user;
+            console.log(user);
             appCtx?.setLoggedIn(true);
             appCtx?.setLoggedInUser(user);
-          } else {
-            firebase
-              .auth()
-              .signInWithEmailAndPassword(data.email, data.password)
-              .then((userCredential) => {
-                // Signed in
-                var user = userCredential.user;
-                console.log(user);
-                //localStorage.setItem("key", user!.uid);
-                // ...
-              })
-              .catch((error) => {
-                var errorCode = error.code;
-                var errorMessage = error.message;
-              });
-          }
-        });
+            //localStorage.setItem("key", user!.uid);
+            // ...
+          })
+          .catch((error) => {
+            var errorCode = error.code;
+            var errorMessage = error.message;
+          });
       });
   };
   return (
