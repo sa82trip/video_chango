@@ -15,12 +15,16 @@ export const CreateAccount = () => {
   useEffect(() => {}, []);
 
   const makeUser = (email: string, password: string) => {
+    console.log("make user");
     firebase
       .auth()
       .createUserWithEmailAndPassword(email, password)
       .then((userCredential) => {
         // Signed in
         var user = userCredential.user;
+        console.log("success", user);
+        alert("signed up successfully");
+        history.push("/");
         // ...
       })
       .catch((error) => {
@@ -35,7 +39,6 @@ export const CreateAccount = () => {
     handleSubmit,
     watch,
   } = useForm<ICreateAccountFormInput>({ mode: "onChange" });
-  console.log(watch());
   const createAccountSubmitHandler = ({
     email,
     password,

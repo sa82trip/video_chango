@@ -7,11 +7,11 @@ export const LoggedOutRoutes: React.FC = () => {
   return (
     <Router>
       <Switch>
-        <Route path="/create-account">
-          <CreateAccount />
-        </Route>
         <Route path="/" exact>
           <Login />
+        </Route>
+        <Route path="/create-account">
+          <CreateAccount />
         </Route>
       </Switch>
     </Router>
