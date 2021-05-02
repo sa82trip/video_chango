@@ -27,11 +27,15 @@ export const VidPlayer: React.FC<Vid_block_type> = ({
   const [playedSec, setPlayedSec] = useState(0);
   const [playing, setPlaying] = useState(false);
 
+  // window.onbeforeunload = function (evt: any) {
+  //   handleUpdateWatchedVideo();
+  //   return "";
+  // };
   const handleUpdateWatchedVideo = () => {
-    console.log("id", id);
     const currentNum = playerRef.current?.getCurrentTime();
     setPlayedSec(playedSec && playedSec | 0);
     const flooredNum = Math.floor((currentNum && currentNum) || 0);
+    console.log("id", id, flooredNum);
     const watchedVideo = firestore.collection("vid-list").doc(id);
     watchedVideo.get().then((doc) => {
       console.log(doc.data());

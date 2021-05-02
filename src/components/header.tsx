@@ -1,18 +1,19 @@
 import React from "react";
 import firebase from "firebase";
 import { useHistory } from "react-router-dom";
+import { SORTING_METHOD } from "../pages/main-page";
 
 interface IHeaderProps {
   searchTerm: string;
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleSearch: (searchTerm: string) => void;
   addVideoToWatchLaterList: () => void;
+  handleSorting: (method: SORTING_METHOD) => void;
 }
 export const Header: React.FC<IHeaderProps> = ({
   searchTerm,
   handleChange,
-  handleSearch,
   addVideoToWatchLaterList,
+  handleSorting,
 }) => {
   const history = useHistory();
   const logoutHandler = () => {
@@ -27,6 +28,17 @@ export const Header: React.FC<IHeaderProps> = ({
       .catch((error) => {
         // An error happened.
       });
+  };
+
+  const handleSearch = async (searchTerm: string) => {
+    if (history) {
+      //      history.push({
+      //        pathname: "/search",
+      //        search: `?term=${searchTerm}`,
+      //      });
+      history.push(`/search/${searchTerm}`);
+    } else {
+    }
   };
   return (
     <>
@@ -58,6 +70,9 @@ export const Header: React.FC<IHeaderProps> = ({
             onClick={() => logoutHandler()}
           >
             logout
+          </button>
+          <button onClick={() => handleSorting(SORTING_METHOD.BY_DATE)}>
+            sorting
           </button>
         </div>
       </div>

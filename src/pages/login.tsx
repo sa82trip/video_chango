@@ -31,18 +31,25 @@ export const Login: React.FC = () => {
   console.log(watch());
 
   useEffect(() => {
-    firebase
-      .auth()
-      .setPersistence(firebase.auth.Auth.Persistence.SESSION)
-      .then(() => {
-        firebase.auth().onAuthStateChanged((user) => {
-          if (user) {
-            console.log(user);
-            appCtx?.setLoggedInUser(user);
-            appCtx?.setLoggedIn((prev) => !prev);
-          }
-        });
-      });
+    // firebase.auth().onAuthStateChanged((user) => {
+    //   console.log(user);
+    //   if (user) {
+    //     appCtx?.setLoggedInUser(user);
+    //     appCtx?.setLoggedIn((prev) => !prev);
+    //   }
+    // });
+    // firebase
+    //   .auth()
+    //   .setPersistence(firebase.auth.Auth.Persistence.SESSION)
+    //   .then(() => {
+    //     firebase.auth().onAuthStateChanged((user) => {
+    //       if (user) {
+    //         console.log(user);
+    //         appCtx?.setLoggedInUser(user);
+    //         appCtx?.setLoggedIn((prev) => !prev);
+    //       }
+    //     });
+    //   });
   });
 
   const loginHandler = (data: ILoginFormInput) => {

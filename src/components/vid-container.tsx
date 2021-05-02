@@ -13,6 +13,7 @@ export const VidContainer: React.FC<IProps> = ({
   toggleModal,
 }) => {
   const [winWidth, setWinWidth] = useState(window.innerWidth); //const [vids, setVids] = useState<YouTubeSearchResults[]>([]);
+  const [testList, setTestList] = useState(vid_list);
   useEffect(() => {
     console.log(vid_list);
     const handleSize = () => {
