@@ -53,31 +53,33 @@ export const MainPage: React.FC<IMainPageProps | null> = ({ loggedInUser }) => {
   }, [loggedInUser]);
 
   const fetchData = async () => {
-    console.log("session", sessionStorage.length);
-    let testVids: Vid_block_type[] = [];
-    try {
-      await firestore
-        .collection("vid-list")
-        .where("userEmail", "==", loggedInUser?.email)
-        .get()
-        .then((docs) =>
-          docs.forEach((doc) => {
-            testVids.push({
-              id: doc.id,
-              userEmail: doc.data()!.userEmail,
-              url: doc.data()!.url,
-              archived: doc.data()!.archived,
-              rating: doc.data()!.rating,
-              playedSeconds: doc.data()!.playedSeconds,
-              createdAt: doc.data()!.createdAt,
-            });
-            console.log(testVids);
-          })
-        );
-      //doc("vid-list-id");
-      setFetchedVids(testVids);
-    } catch (e) {
-      console.log(e);
+    if (loggedInUser) {
+      console.log("session", sessionStorage.length);
+      let testVids: Vid_block_type[] = [];
+      try {
+        await firestore
+          .collection("vid-list")
+          .where("userEmail", "==", loggedInUser?.email)
+          .get()
+          .then((docs) =>
+            docs.forEach((doc) => {
+              testVids.push({
+                id: doc.id,
+                userEmail: doc.data()!.userEmail,
+                url: doc.data()!.url,
+                archived: doc.data()!.archived,
+                rating: doc.data()!.rating,
+                playedSeconds: doc.data()!.playedSeconds,
+                createdAt: doc.data()!.createdAt,
+              });
+              console.log(testVids);
+            })
+          );
+        //doc("vid-list-id");
+        setFetchedVids(testVids);
+      } catch (e) {
+        console.log(e);
+      }
     }
   };
 
@@ -159,7 +161,7 @@ export const MainPage: React.FC<IMainPageProps | null> = ({ loggedInUser }) => {
   ReactModal.setAppElement("#root");
   return (
     <BrowserRouter>
-      {sessionStorage.length !== 0 ? (
+      {loggedInUser ? (
         <Switch>
           <Route exact path="/">
             <div className="bg-red-50">
