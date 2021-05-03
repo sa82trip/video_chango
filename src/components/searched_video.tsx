@@ -1,7 +1,12 @@
-import React, { useState } from "react";
-import ReactModal from "react-modal";
+import React, { useContext, useRef, useState } from "react";
+import ReactPlayer from "react-player";
+import { Link } from "react-router-dom";
+import { firestore } from "../firebase";
+import { LoggedInUserCtx } from "./App";
+import { Vid_block_type } from "./vid_player";
 
-export interface ISearchedVideo {
+export interface ISearchedVideo
+  extends Omit<Partial<Vid_block_type>, "toggleModal"> {
   title: string;
   url: string;
   thumbnail: string;
@@ -9,6 +14,7 @@ export interface ISearchedVideo {
   videoId: string;
   channelTitle: string;
   publishedAt: string;
+  toggleModal?: ({}: ISearchedVideo) => void;
 }
 
 export const SearchedVideo: React.FC<ISearchedVideo> = ({
@@ -19,38 +25,81 @@ export const SearchedVideo: React.FC<ISearchedVideo> = ({
   channelTitle,
   videoId,
   publishedAt,
+  toggleModal,
 }) => {
   const [IsModalOpen, setIsOpen] = useState(false);
-  const customStyles = {
-    content: {
-      width: "80%",
-      height: "80vh",
-      background: "gray",
-      top: "50%",
-      left: "50%",
-      right: "auto",
-      bottom: "auto",
-      marginRight: "-50%",
-      transform: "translate(-50%, -50%)",
-    },
+
+  const loggedInUserCtx = useContext(LoggedInUserCtx);
+  const addVideoToWatchedVideoList = async () => {
+    if (loggedInUserCtx) {
+      const videoThatWillWatchLater: Vid_block_type = {
+        url,
+        userEmail: (loggedInUserCtx.email && loggedInUserCtx.email) || "test",
+        rating: 3,
+        archived: false,
+        playedSeconds: 0,
+        createdAt: new Date(),
+      };
+      await firestore
+        .collection("vid-list")
+        .add(addVideoToWatchedVideoList)
+        .then(() => {});
+    }
   };
+
+  const playerRef = useRef<ReactPlayer>(null);
+  // const handleSeekTo = () => {
+  //   console.log(playedSeconds);
+  //   if (playedSeconds) {
+  //     playerRef.current?.seekTo(playedSeconds, "seconds");
+  //   } else {
+  //     return;
+  //   }
+  // };
   return (
-    <div>
-      <h1>hihi</h1>
-      <div>
-        <img src={thumbnail} alt="" />
+    <>
+      <div className="relative my-3 mx-3 hover:opacity-70 transition-colors duration-100">
+        <div className="">
+          <img
+            onClick={() =>
+              toggleModal &&
+              toggleModal({
+                url,
+                userEmail: loggedInUserCtx!.email || "test@email.com",
+                rating: 3,
+                archived: false,
+                playedSeconds: 0,
+                title,
+                thumbnail,
+                channelTitle,
+                channelId,
+                videoId,
+                publishedAt,
+              })
+            }
+            className="w-96 cursor-pointer"
+            src={thumbnail}
+            alt=""
+          />
+        </div>
+        <div className="flex flex-row justify-between">
+          <h3 className="font-bold">{title}</h3>
+          <span className="text-white font-bold py-1 mr-1 object-center">
+            ⋮
+          </span>
+        </div>
+        <h4
+          onClick={() =>
+            window.open(`https://youtube.com/channel/${channelId}`)
+          }
+          className="text-gray-500 cursor-pointer"
+        >
+          {channelTitle}
+        </h4>
+        <h4 className="text-sm text-gray-500">
+          {new Date(publishedAt).toLocaleDateString()}에 업로드 됨
+        </h4>
       </div>
-      <div>
-        <h3 className="text-lg font-medium">{title}</h3>
-        <h4 className="text-gray-400">{channelTitle}</h4>
-        {/*
-        <ReactModal
-          style={customStyles}
-          isOpen={IsModalOpen}
-          onRequestClose={() => setIsOpen((prev) => !prev)}
-        ></ReactModal>
-		  */}
-      </div>
-    </div>
+    </>
   );
 };

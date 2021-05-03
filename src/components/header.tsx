@@ -63,6 +63,12 @@ export const Header: React.FC<IHeaderProps> = ({
           >
             import from clipboard
           </button>
+          <button
+            className="btn mt-0 ml-2 bg-gray-300"
+            onClick={() => handleSorting(SORTING_METHOD.BY_DATE)}
+          >
+            sorting
+          </button>
         </div>
         <div className="content-end">
           <button
@@ -70,9 +76,6 @@ export const Header: React.FC<IHeaderProps> = ({
             onClick={() => logoutHandler()}
           >
             logout
-          </button>
-          <button onClick={() => handleSorting(SORTING_METHOD.BY_DATE)}>
-            sorting
           </button>
         </div>
       </div>

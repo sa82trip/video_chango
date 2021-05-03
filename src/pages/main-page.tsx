@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import ReactModal from "react-modal";
-import { Route, Router, Switch, useHistory } from "react-router";
+import { Route, Switch, useHistory } from "react-router";
 import { Header } from "../components/header";
 import { VidContainer } from "../components/vid-container";
 import { VidPlayer, Vid_block_type } from "../components/vid_player";
 import { firestore } from "../firebase.js";
-import firebase from "firebase";
 import { BrowserRouter } from "react-router-dom";
 import { SearchedVideos } from "./searched-videos";
 import { LoggedOutRoutes } from "../routes/logged-out-routes";
+import { LoggedInUserCtx } from "../components/App";
 
 export enum SORTING_METHOD {
   BY_TITLE = "BY_TITLE",
@@ -28,11 +28,8 @@ const customStyles = {
     transform: "translate(-50%, -50%)",
   },
 };
-interface IMainPageProps {
-  loggedInUser: firebase.User | null;
-}
 
-export const MainPage: React.FC<IMainPageProps | null> = ({ loggedInUser }) => {
+export const MainPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [fetchedVids, setFetchedVids] = useState<Vid_block_type[]>([]);
   const [sortingFlag, setSortingFlag] = useState(false);
@@ -47,19 +44,19 @@ export const MainPage: React.FC<IMainPageProps | null> = ({ loggedInUser }) => {
     setSearchTerm(e.target.value);
   };
   const history = useHistory();
+  const loggedInUserCtx = useContext(LoggedInUserCtx);
 
   useEffect(() => {
     fetchData();
-  }, [loggedInUser]);
+  }, [loggedInUserCtx]);
 
   const fetchData = async () => {
-    if (loggedInUser) {
-      console.log("session", sessionStorage.length);
+    if (loggedInUserCtx) {
       let testVids: Vid_block_type[] = [];
       try {
         await firestore
           .collection("vid-list")
-          .where("userEmail", "==", loggedInUser?.email)
+          .where("userEmail", "==", loggedInUserCtx?.email)
           .get()
           .then((docs) =>
             docs.forEach((doc) => {
@@ -72,7 +69,6 @@ export const MainPage: React.FC<IMainPageProps | null> = ({ loggedInUser }) => {
                 playedSeconds: doc.data()!.playedSeconds,
                 createdAt: doc.data()!.createdAt,
               });
-              console.log(testVids);
             })
           );
         //doc("vid-list-id");
@@ -104,7 +100,7 @@ export const MainPage: React.FC<IMainPageProps | null> = ({ loggedInUser }) => {
     }
   };
 
-  const toggleModal = (video?: Vid_block_type) => {
+  const toggleModalWithVideo = (video?: Vid_block_type) => {
     if (video) {
       setModalVideoUrl(video.url);
       setModalId(video.userEmail);
@@ -137,10 +133,10 @@ export const MainPage: React.FC<IMainPageProps | null> = ({ loggedInUser }) => {
     console.log(copiedText.search("http"));
     if (copiedText.search("http") !== -1) {
       console.log(copiedText);
-      if (loggedInUser) {
+      if (loggedInUserCtx) {
         const videoThatWillWatchLater: Vid_block_type = {
           url: copiedText,
-          userEmail: (loggedInUser.email && loggedInUser.email) || "test",
+          userEmail: (loggedInUserCtx.email && loggedInUserCtx.email) || "test",
           rating: 3,
           archived: false,
           playedSeconds: 0,
@@ -161,46 +157,51 @@ export const MainPage: React.FC<IMainPageProps | null> = ({ loggedInUser }) => {
   ReactModal.setAppElement("#root");
   return (
     <BrowserRouter>
-      {loggedInUser ? (
-        <Switch>
-          <Route exact path="/">
-            <div className="bg-red-50">
-              {/*<button onClick={() => toggleModal()}>Open Modal</button>*/}
-              <ReactModal
-                style={customStyles}
-                isOpen={IsModalOpen}
-                onRequestClose={() => toggleModal()}
-              >
-                <button className="btn" onClick={() => toggleModal()}>
-                  close
-                </button>
-                <div className="shadow-md">
-                  <VidPlayer
-                    playedSeconds={modalPlayedSeconds}
-                    url={modalVideoUrl ? modalVideoUrl : ""}
-                    userEmail={modalId}
-                    rating={modalRating}
-                    archived={modalArchived}
-                  />
-                </div>
-              </ReactModal>
-              <Header
-                addVideoToWatchLaterList={addVideoToWatchLaterList}
-                searchTerm={searchTerm}
-                handleChange={handleChange}
-                handleSorting={sortingWithMethod}
-              />
-              <VidContainer
-                toggleModal={toggleModal}
-                handleDeleteButtonClick={handleDeleteButtonClick}
-                vid_list={fetchedVids}
-              />
-            </div>
-          </Route>
-          <Route path="/search/:searchTerm">
-            <SearchedVideos />
-          </Route>
-        </Switch>
+      {loggedInUserCtx || sessionStorage.length !== 0 ? (
+        <>
+          <Header
+            addVideoToWatchLaterList={addVideoToWatchLaterList}
+            searchTerm={searchTerm}
+            handleChange={handleChange}
+            handleSorting={sortingWithMethod}
+          />
+          <Switch>
+            <Route exact path="/">
+              <div className="bg-red-50">
+                {/*<button onClick={() => toggleModal()}>Open Modal</button>*/}
+                <ReactModal
+                  style={customStyles}
+                  isOpen={IsModalOpen}
+                  onRequestClose={() => toggleModalWithVideo()}
+                >
+                  <button
+                    className="btn"
+                    onClick={() => toggleModalWithVideo()}
+                  >
+                    close
+                  </button>
+                  <div className="shadow-md">
+                    <VidPlayer
+                      playedSeconds={modalPlayedSeconds}
+                      url={modalVideoUrl ? modalVideoUrl : ""}
+                      userEmail={modalId}
+                      rating={modalRating}
+                      archived={modalArchived}
+                    />
+                  </div>
+                </ReactModal>
+                <VidContainer
+                  toggleModal={toggleModalWithVideo}
+                  handleDeleteButtonClick={handleDeleteButtonClick}
+                  vid_list={fetchedVids}
+                />
+              </div>
+            </Route>
+            <Route path="/search/:searchTerm">
+              <SearchedVideos />
+            </Route>
+          </Switch>
+        </>
       ) : (
         <LoggedOutRoutes />
       )}

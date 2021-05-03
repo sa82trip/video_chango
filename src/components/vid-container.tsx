@@ -27,7 +27,7 @@ export const VidContainer: React.FC<IProps> = ({
   }, []);
 
   return (
-    <div className="max-w-full mx-auto bg-gray-800 h-200">
+    <div className="max-w-full mx-auto bg-gray-800 h-full">
       {/*header
       <div className="flex items-center w-full bg-gray-500 py-5">
         <div className="mx-auto w-1/2 flex justify-center">
@@ -57,7 +57,6 @@ export const VidContainer: React.FC<IProps> = ({
               : `grid grid-cols-3 gap-5 px-3`
           }`}
         >
-          {/*{[0, 1, 2, 3, 4, 5, 6, 7, 8].map((one) => (*/}
           {vid_list
             .filter((one) => one.url !== "")
             .map((one) => (

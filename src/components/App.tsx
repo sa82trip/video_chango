@@ -7,9 +7,7 @@ import React, {
   useState,
 } from "react";
 import "../styles/styles.css";
-import { BrowserRouter as Router } from "react-router-dom";
 import firebase from "firebase";
-import { LoggedOutRoutes } from "../routes/logged-out-routes";
 import { MainPage } from "../pages/main-page";
 
 interface AppContextInterface {
@@ -45,7 +43,9 @@ export const App: React.FC = () => {
 
   return (
     <UserContext.Provider value={value}>
-      <MainPage loggedInUser={loggedInUser} />
+      <LoggedInUserCtx.Provider value={firebase.auth().currentUser}>
+        <MainPage />
+      </LoggedInUserCtx.Provider>
     </UserContext.Provider>
   );
 };

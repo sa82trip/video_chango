@@ -32,9 +32,9 @@ export const VidPlayer: React.FC<Vid_block_type> = ({
   //   return "";
   // };
   const handleUpdateWatchedVideo = () => {
-    const currentNum = playerRef.current?.getCurrentTime();
-    setPlayedSec(playedSec && playedSec | 0);
-    const flooredNum = Math.floor((currentNum && currentNum) || 0);
+    const currentTime = playerRef.current?.getCurrentTime();
+    setPlayedSec((playedSec && playedSec) || 0);
+    const flooredNum = Math.floor((currentTime && currentTime) || 0);
     console.log("id", id, flooredNum);
     const watchedVideo = firestore.collection("vid-list").doc(id);
     watchedVideo.get().then((doc) => {
@@ -61,7 +61,7 @@ export const VidPlayer: React.FC<Vid_block_type> = ({
         light={true}
         controls={true}
         // width={`${() => document.getElementById(`${id}`)?.offsetWidth}`}
-        width={"100%"}
+        width="100%"
         url={url}
         onPause={() => {
           handleUpdateWatchedVideo();
