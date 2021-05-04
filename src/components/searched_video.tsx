@@ -58,7 +58,7 @@ export const SearchedVideo: React.FC<ISearchedVideo> = ({
   // };
   return (
     <>
-      <div className="relative my-3 mx-3 hover:opacity-70 transition-colors duration-100">
+      <div className="relative my-3 mx-3 ">
         <div className="">
           <img
             onClick={() =>
@@ -77,12 +77,12 @@ export const SearchedVideo: React.FC<ISearchedVideo> = ({
                 publishedAt,
               })
             }
-            className="w-96 cursor-pointer"
+            className="w-96 cursor-pointer hover:opacity-70 transition-colors duration-100"
             src={thumbnail}
             alt=""
           />
         </div>
-        <div className="flex flex-row justify-between">
+        <div className="flex flex-row justify-between group">
           <h3 className="font-bold">{title}</h3>
           <span className="text-white font-bold py-1 mr-1 object-center">
             ⋮

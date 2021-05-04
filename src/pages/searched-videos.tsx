@@ -4,9 +4,7 @@ import ReactPlayer from "react-player";
 import { useParams } from "react-router-dom";
 import youtubeSearch, { YouTubeSearchResults } from "youtube-search";
 import { LoggedInUserCtx } from "../components/App";
-import { mockVideos } from "../components/mockData/mockVideos";
 import { ISearchedVideo, SearchedVideo } from "../components/searched_video";
-import { Vid_block_type } from "../components/vid_player";
 import { firestore } from "../firebase";
 import { customStyles } from "../styles/modalStyle";
 
@@ -16,11 +14,10 @@ interface SearchedVideosParam {
 
 export const SearchedVideos = () => {
   const params = useParams<SearchedVideosParam>();
-  const [searchedVideos, setSearchedVideos] = useState<ISearchedVideo[]>(
-    mockVideos
-  );
+  const [searchedVideos, setSearchedVideos] = useState<ISearchedVideo[]>([]);
   const [IsModalOpen, setIsOpen] = useState(false);
   const [videoForModal, setVideoForModal] = useState<ISearchedVideo>();
+  const [searchKeyword, setSearchKeyword] = useState(params.searchTerm);
 
   const toggleModalWithVideo = (video?: ISearchedVideo) => {
     if (video) setVideoForModal(video);
@@ -29,12 +26,13 @@ export const SearchedVideos = () => {
 
   useEffect(() => {
     console.log("search term", params.searchTerm);
-    searchVideo(params.searchTerm);
-  }, []);
+    setSearchKeyword(() => params.searchTerm);
+    searchVideo(searchKeyword);
+  }, [searchKeyword, params.searchTerm]);
 
   const searchVideo = (searchTerm: string) => {
     const opts: youtubeSearch.YouTubeSearchOptions = {
-      maxResults: 10,
+      maxResults: 25,
       key: "AIzaSyBGGKmHHnugNI1OZknrhU949TNcEeyArqM",
     };
     //  setSearchedVideos(mockVideos);
@@ -56,12 +54,12 @@ export const SearchedVideos = () => {
         console.dir(results);
         console.log("clicked!");
         setSearchedVideos(mappedVideos);
-        console.log(searchedVideos);
       }
     });
   };
 
   const loggedInUserCtx = useContext(LoggedInUserCtx);
+
   const addVideoToWatchLaterList = async ({
     title,
     thumbnail,
@@ -71,19 +69,22 @@ export const SearchedVideos = () => {
     publishedAt,
     url,
   }: ISearchedVideo) => {
+    console.log(title, videoId);
+    let isExist: boolean = false;
     await firestore
       .collection("vid-list")
       .where("videoId", "==", videoId)
       .get()
       .then((docs) => {
-        if (docs) {
+        if (docs.size !== 0) {
           console.log("exist!");
-          return;
+          isExist = true;
         } else {
-          console.log("no!!");
-          return;
+          isExist = false;
+          console.log("yes~ we can add~");
         }
       });
+    if (isExist) return;
 
     if (loggedInUserCtx) {
       const videoThatWillWatchLater: ISearchedVideo = {
@@ -105,7 +106,7 @@ export const SearchedVideos = () => {
         .add(videoThatWillWatchLater)
         .then((data) => {
           console.log(data);
-          if (setSearchedVideos) {
+          if (setSearchedVideos !== undefined) {
             const newVidList = [...searchedVideos, videoThatWillWatchLater];
             setSearchedVideos(newVidList);
           }
@@ -142,7 +143,7 @@ export const SearchedVideos = () => {
             <div className="flex flex-row">
               <SearchedVideo
                 toggleModal={toggleModalWithVideo}
-                key={one.videoId}
+                key={one.id}
                 videoId={one.videoId}
                 url={one.url}
                 title={one.title}

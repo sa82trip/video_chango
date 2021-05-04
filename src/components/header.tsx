@@ -1,7 +1,8 @@
 import React from "react";
 import firebase from "firebase";
-import { useHistory } from "react-router-dom";
+import { Link, Redirect, useHistory } from "react-router-dom";
 import { SORTING_METHOD } from "../pages/main-page";
+import mainLogo from "../icon/horizontal_on_white_by_logaster-removebg-preview.png";
 
 interface IHeaderProps {
   searchTerm: string;
@@ -30,19 +31,20 @@ export const Header: React.FC<IHeaderProps> = ({
       });
   };
 
-  const handleSearch = async (searchTerm: string) => {
-    if (history) {
-      //      history.push({
-      //        pathname: "/search",
-      //        search: `?term=${searchTerm}`,
-      //      });
-      history.push(`/search/${searchTerm}`);
-    } else {
-    }
+  const handleSearch = (searchTerm: string) => {
+    console.log("header", searchTerm);
+    //      history.push({
+    //        pathname: "/search",
+    //        search: `?term=${searchTerm}`,
+    //      });
+    history.push(`/search/${searchTerm}`);
   };
   return (
     <>
       <div className="flex items-center w-full bg-gray-500 pt-5 pb-3">
+        <Link to="/">
+          <img className="hidden ml-5 w-32 md:block" src={mainLogo} alt="" />
+        </Link>
         <div className="flex flex-col mx-auto md:w-1/2 md:flex-row justify-center">
           <input
             type="text"
@@ -58,7 +60,7 @@ export const Header: React.FC<IHeaderProps> = ({
             Search
           </button>
           <button
-            className="btn bg-green-500 mt-0 ml-2"
+            className="hidden btn bg-green-500 mt-0 ml-2 md:block"
             onClick={() => addVideoToWatchLaterList()}
           >
             import from clipboard

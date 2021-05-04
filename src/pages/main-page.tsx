@@ -39,6 +39,7 @@ export const MainPage: React.FC = () => {
   const [modalArchived, setModalArchived] = useState(false);
   const [modalPlayedSeconds, setModalPlayedSeconds] = useState(0);
   const [modalId, setModalId] = useState("");
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log(e.target.value);
     setSearchTerm(e.target.value);
@@ -52,7 +53,7 @@ export const MainPage: React.FC = () => {
 
   const fetchData = async () => {
     if (loggedInUserCtx) {
-      let testVids: Vid_block_type[] = [];
+      let videosFromFireStore: Vid_block_type[] = [];
       try {
         await firestore
           .collection("vid-list")
@@ -60,7 +61,7 @@ export const MainPage: React.FC = () => {
           .get()
           .then((docs) =>
             docs.forEach((doc) => {
-              testVids.push({
+              videosFromFireStore.push({
                 id: doc.id,
                 userEmail: doc.data()!.userEmail,
                 url: doc.data()!.url,
@@ -68,11 +69,12 @@ export const MainPage: React.FC = () => {
                 rating: doc.data()!.rating,
                 playedSeconds: doc.data()!.playedSeconds,
                 createdAt: doc.data()!.createdAt,
+                title: doc.data().title,
               });
             })
           );
         //doc("vid-list-id");
-        setFetchedVids(testVids);
+        setFetchedVids(videosFromFireStore.sort(() => Math.random() - 0.5));
       } catch (e) {
         console.log(e);
       }

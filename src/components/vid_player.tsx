@@ -12,6 +12,7 @@ export interface Vid_block_type {
   toggleModal?: ({}: Vid_block_type) => void;
   playedSeconds: number;
   createdAt?: Date;
+  title?: string;
 }
 export const VidPlayer: React.FC<Vid_block_type> = ({
   id,
@@ -23,6 +24,7 @@ export const VidPlayer: React.FC<Vid_block_type> = ({
   toggleModal,
   playedSeconds,
   createdAt,
+  title,
 }) => {
   const [playedSec, setPlayedSec] = useState(0);
   const [playing, setPlaying] = useState(false);
@@ -52,8 +54,10 @@ export const VidPlayer: React.FC<Vid_block_type> = ({
       return;
     }
   };
+  useEffect(() => {
+  }, []);
   return (
-    <div id={id} className="font-semibold text-white mx-1">
+    <div id={id} className="font-semibold text-white mx-1 my-3">
       <ReactPlayer
         onReady={(e) => setPlaying(true)}
         playing={playing}
@@ -70,6 +74,7 @@ export const VidPlayer: React.FC<Vid_block_type> = ({
           handleUpdateWatchedVideo();
         }}
       />
+      <span className="font-semibold">{title && title}</span>
       <div className="flex justify-between">
         <label htmlFor="" className="my-auto">
           <select
