@@ -17,7 +17,7 @@ export const SearchedVideos = () => {
   const [searchedVideos, setSearchedVideos] = useState<ISearchedVideo[]>([]);
   const [IsModalOpen, setIsOpen] = useState(false);
   const [videoForModal, setVideoForModal] = useState<ISearchedVideo>();
-  const [searchKeyword, setSearchKeyword] = useState(params.searchTerm);
+  const [searchKeyword, setSearchKeyword] = useState("");
 
   const toggleModalWithVideo = (video?: ISearchedVideo) => {
     if (video) setVideoForModal(video);
@@ -27,18 +27,22 @@ export const SearchedVideos = () => {
   useEffect(() => {
     console.log("search term", params.searchTerm);
     setSearchKeyword(() => params.searchTerm);
-    searchVideo(searchKeyword);
+    //code for calling this fucn with previous param
+    if (searchKeyword !== "") searchVideo(searchKeyword);
   }, [searchKeyword, params.searchTerm]);
 
-  const searchVideo = (searchTerm: string) => {
+  const searchVideo = async (searchTerm: string) => {
     const opts: youtubeSearch.YouTubeSearchOptions = {
       maxResults: 25,
       key: "AIzaSyBGGKmHHnugNI1OZknrhU949TNcEeyArqM",
     };
     //  setSearchedVideos(mockVideos);
     let mappedVideos: ISearchedVideo[] = [];
-    youtubeSearch(searchTerm, opts, (err, results) => {
+    await youtubeSearch(searchTerm, opts, (err, results) => {
       if (err) return console.log(err);
+      if (!results) {
+        return <h1 className="text-white">No video available</h1>;
+      }
       if (results) {
         results.forEach((video) => {
           mappedVideos.push({
@@ -51,6 +55,7 @@ export const SearchedVideos = () => {
             publishedAt: video.publishedAt,
           });
         });
+        console.log("searchterm:", searchTerm);
         console.dir(results);
         console.log("clicked!");
         setSearchedVideos(mappedVideos);
