@@ -9,6 +9,8 @@ import { BrowserRouter } from "react-router-dom";
 import { SearchedVideos } from "./searched-videos";
 import { LoggedOutRoutes } from "../routes/logged-out-routes";
 import { LoggedInUserCtx } from "../components/App";
+import { bugerMenuStyle, testStyle } from "../styles/modalStyle";
+import firebase from "firebase";
 
 export enum SORTING_METHOD {
   BY_TITLE = "BY_TITLE",
@@ -33,12 +35,14 @@ export const MainPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [fetchedVids, setFetchedVids] = useState<Vid_block_type[]>([]);
   const [sortingFlag, setSortingFlag] = useState(false);
-  const [IsModalOpen, setIsOpen] = useState(false);
+  const [isPlayerModalOpen, setIsPlayerModalOpen] = useState(false);
+  const [isMenuModalOpen, setIsMenuModalOpen] = useState(false);
   const [modalVideoUrl, setModalVideoUrl] = useState("");
   const [modalRating, setModalRating] = useState(3);
   const [modalArchived, setModalArchived] = useState(false);
   const [modalPlayedSeconds, setModalPlayedSeconds] = useState(0);
   const [modalId, setModalId] = useState("");
+  const [winWidth, setWinWidth] = useState(window.innerWidth); //const [vids, setVids] = useState<YouTubeSearchResults[]>([]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log(e.target.value);
@@ -49,6 +53,14 @@ export const MainPage: React.FC = () => {
 
   useEffect(() => {
     fetchData();
+    const handleSize = () => {
+      console.log("main", window.innerWidth);
+      setWinWidth(window.innerWidth);
+    };
+    window.addEventListener("resize", handleSize);
+    return () => {
+      window.removeEventListener("resize", handleSize);
+    };
   }, [loggedInUserCtx]);
 
   const fetchData = async () => {
@@ -81,7 +93,8 @@ export const MainPage: React.FC = () => {
     }
   };
 
-  const sortingWithMethod = (method: SORTING_METHOD) => {
+  const handleSorting = (method: SORTING_METHOD) => {
+    setIsMenuModalOpen((prev) => !prev);
     if (method === SORTING_METHOD.BY_DATE) {
       if (!sortingFlag) {
         const sortedVids = [...fetchedVids].sort(
@@ -102,6 +115,20 @@ export const MainPage: React.FC = () => {
     }
   };
 
+  const logoutHandler = () => {
+    setIsMenuModalOpen((prev) => !prev);
+    firebase
+      .auth()
+      .signOut()
+      .then(() => {
+        console.log("logged out");
+        // Sign-out successful.
+      })
+      .catch((error) => {
+        // An error happened.
+      });
+  };
+
   const toggleModalWithVideo = (video?: Vid_block_type) => {
     if (video) {
       setModalVideoUrl(video.url);
@@ -117,7 +144,7 @@ export const MainPage: React.FC = () => {
         video.rating
       );
     }
-    setIsOpen(!IsModalOpen);
+    setIsPlayerModalOpen(!isPlayerModalOpen);
   };
 
   const handleDeleteButtonClick = async (id: string) => {
@@ -165,7 +192,8 @@ export const MainPage: React.FC = () => {
             addVideoToWatchLaterList={addVideoToWatchLaterList}
             searchTerm={searchTerm}
             handleChange={handleChange}
-            handleSorting={sortingWithMethod}
+            setIsModalOpen={setIsMenuModalOpen}
+            handleSorting={handleSorting}
           />
           <Switch>
             <Route exact path="/">
@@ -173,7 +201,7 @@ export const MainPage: React.FC = () => {
                 {/*<button onClick={() => toggleModal()}>Open Modal</button>*/}
                 <ReactModal
                   style={customStyles}
-                  isOpen={IsModalOpen}
+                  isOpen={isPlayerModalOpen}
                   onRequestClose={() => toggleModalWithVideo()}
                 >
                   <button
@@ -192,7 +220,32 @@ export const MainPage: React.FC = () => {
                     />
                   </div>
                 </ReactModal>
+                {/*menu modal*/}
+                <ReactModal
+                  style={winWidth < 640 ? bugerMenuStyle : testStyle}
+                  isOpen={isMenuModalOpen}
+                  onRequestClose={() => setIsMenuModalOpen((prev) => !prev)}
+                >
+                  <button className="btn" onClick={() => logoutHandler()}>
+                    logout
+                  </button>
+                  <div className="flex flex-col mx-auto md:w-1/2 md:flex-row justify-center">
+                    <button
+                      className="btn bg-green-500 mt-0 ml-2 "
+                      onClick={() => addVideoToWatchLaterList()}
+                    >
+                      import from clipboard
+                    </button>
+                    <button
+                      className="btn mt-0 ml-2 bg-gray-300"
+                      onClick={() => handleSorting(SORTING_METHOD.BY_DATE)}
+                    >
+                      sorting
+                    </button>
+                  </div>
+                </ReactModal>
                 <VidContainer
+                  winWidth={winWidth}
                   toggleModal={toggleModalWithVideo}
                   handleDeleteButtonClick={handleDeleteButtonClick}
                   vid_list={fetchedVids}

@@ -112,22 +112,7 @@ export const Header: React.FC<IHeaderProps> = ({
           </div>
         )}
       </form>
-      <div className="flex items-center w-full bg-gray-500 pt-5 pb-3">
-        <div className="flex flex-col mx-auto md:w-1/2 md:flex-row justify-center">
-          <button
-            className="hidden btn bg-green-500 mt-0 ml-2 md:block"
-            onClick={() => addVideoToWatchLaterList()}
-          >
-            import from clipboard
-          </button>
-          <button
-            className="btn mt-0 ml-2 bg-gray-300"
-            onClick={() => handleSorting(SORTING_METHOD.BY_DATE)}
-          >
-            sorting
-          </button>
-        </div>
-      </div>
+      <div className="flex items-center w-full bg-gray-500 pt-5 pb-3"></div>
     </div>
   );
 };

@@ -11,3 +11,24 @@ export const customStyles = {
     transform: "translate(-50%, -50%)",
   },
 };
+
+export const bugerMenuStyle = {
+  content: {
+    background: "gray",
+    width: "100%",
+    height: "50%",
+    top: "30%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    transform: "translate(-50%, -50%)",
+  },
+};
+
+export const testStyle = {
+  content: {
+    background: "#374151",
+    width: "20%",
+    left: "78%",
+  },
+};

@@ -35,6 +35,8 @@ export const App: React.FC = () => {
       if (user) {
         setLoggedInUser(user);
         setLoggedIn((prev) => !prev);
+      } else {
+        setLoggedInUser(null);
       }
     });
     console.log("loggedInUser");

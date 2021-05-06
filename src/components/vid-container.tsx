@@ -5,26 +5,16 @@ interface IProps {
   vid_list: Vid_block_type[];
   handleDeleteButtonClick?: (id: string) => void;
   toggleModal: ({}: Vid_block_type) => void;
+  winWidth: number;
 }
 
 export const VidContainer: React.FC<IProps> = ({
   vid_list,
   handleDeleteButtonClick,
   toggleModal,
+  winWidth,
 }) => {
-  const [winWidth, setWinWidth] = useState(window.innerWidth); //const [vids, setVids] = useState<YouTubeSearchResults[]>([]);
   const [testList, setTestList] = useState(vid_list);
-  useEffect(() => {
-    console.log(vid_list);
-    const handleSize = () => {
-      console.log(window.innerWidth);
-      setWinWidth(window.innerWidth);
-    };
-    window.addEventListener("resize", handleSize);
-    return () => {
-      window.removeEventListener("resize", handleSize);
-    };
-  }, []);
 
   return (
     <div
@@ -64,7 +54,7 @@ export const VidContainer: React.FC<IProps> = ({
           {vid_list
             .filter((one) => one.url !== "")
             .map((one) => {
-              console.log(one);
+              //  console.log(one);
               return (
                 <div key={one.id!} className="bg-gray-600">
                   <VidPlayer

@@ -144,11 +144,11 @@ export const SearchedVideos = () => {
               />
             )}
           </ReactModal>
-          {searchedVideos?.map((one) => (
+          {searchedVideos?.map((one, index) => (
             <div className="flex flex-row">
               <SearchedVideo
                 toggleModal={toggleModalWithVideo}
-                key={one.id}
+                key={index}
                 videoId={one.videoId}
                 url={one.url}
                 title={one.title}
