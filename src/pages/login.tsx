@@ -21,14 +21,13 @@ export const Login: React.FC = () => {
     register,
     handleSubmit,
     watch,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<ILoginFormInput>({ mode: "onChange" });
 
   const appCtx = useContext(UserContext);
   const loggedInUserCtx = useContext(LoggedInUserCtx);
 
   const history = useHistory();
-  console.log(watch());
 
   useEffect(() => {
     // firebase.auth().onAuthStateChanged((user) => {
@@ -72,6 +71,7 @@ export const Login: React.FC = () => {
           .catch((error) => {
             var errorCode = error.code;
             var errorMessage = error.message;
+            alert(errorMessage);
           });
       });
   };
@@ -107,7 +107,12 @@ export const Login: React.FC = () => {
           {...register("password", { required: true, minLength: 6 })}
         />
         {errors.password && "please check password"}
-        <button className={`bg-red-100 btn my-1 text-black mx-0`} type="submit">
+        <button
+          className={`bg-red-100 btn my-1 text-black mx-0 ${
+            isValid ? "" : "pointer-events-none"
+          }`}
+          type="submit"
+        >
           Login
         </button>
         <Link

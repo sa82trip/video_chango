@@ -35,7 +35,7 @@ export const CreateAccount = () => {
   };
   const {
     register,
-    formState: { errors },
+    formState,
     handleSubmit,
     watch,
   } = useForm<ICreateAccountFormInput>({ mode: "onChange" });
@@ -67,11 +67,11 @@ export const CreateAccount = () => {
             pattern: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
           })}
         />
-        {errors.email && (
+        {formState.errors.email && (
           <h3 className="text-red-400 font-semibold">Email is required</h3>
         )}
 
-        {errors.email?.type === "pattern" && (
+        {formState.errors.email?.type === "pattern" && (
           <h3 className="text-red-400 font-semibold">put valid email</h3>
         )}
         <input
@@ -80,9 +80,11 @@ export const CreateAccount = () => {
           className="formInput"
           {...register("password", { required: true, minLength: 6 })}
         />
-        {errors.password && "please check password"}
+        {formState.errors.password && "please check password"}
         <button
-          className={`btn bg-red-100 px-5 my-1 text-black mx-0`}
+          className={`btn bg-red-100 px-5 my-1 text-black mx-0 ${
+            formState.isValid ? "" : "pointer-events-none"
+          }`}
           type="submit"
         >
           Create Account

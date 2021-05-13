@@ -253,7 +253,10 @@ export const MainPage: React.FC = () => {
               </div>
             </Route>
             <Route path="/search/:searchTerm">
-              <SearchedVideos />
+              <SearchedVideos
+                fetchedVids={fetchedVids}
+                setFetchedVids={setFetchedVids}
+              />
             </Route>
           </Switch>
         </>

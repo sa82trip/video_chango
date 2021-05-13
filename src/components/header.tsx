@@ -1,4 +1,10 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import firebase from "firebase";
 import { Link, Redirect, useHistory } from "react-router-dom";
 import { SORTING_METHOD } from "../pages/main-page";
@@ -15,7 +21,7 @@ import { useForm } from "react-hook-form";
 import ReactModal from "react-modal";
 import { bugerMenuStyle, customStyles } from "../styles/modalStyle";
 
-interface ISearchForm {
+interface ISearchFormValues {
   searchTerm: string;
 }
 
@@ -41,11 +47,12 @@ export const Header: React.FC<IHeaderProps> = ({
     watch,
     getValues,
     formState: { errors },
-  } = useForm<ISearchForm>({ mode: "onChange" });
+    setFocus,
+  } = useForm<ISearchFormValues>({ mode: "onChange" });
 
   const history = useHistory();
 
-  const handleSearch = (data: ISearchForm) => {
+  const handleSearch = (data: ISearchFormValues) => {
     console.log("header", data);
     //      history.push({
     //        pathname: "/search",
@@ -60,7 +67,7 @@ export const Header: React.FC<IHeaderProps> = ({
         onSubmit={handleSubmit(handleSearch)}
       >
         {isShowingSearchBar ? (
-          <div className="flex flex-row justify-center">
+          <div className="flex flex-row justify-center h-14">
             <button type="button">
               <FontAwesomeIcon
                 className="object-left mx-3"
@@ -71,9 +78,9 @@ export const Header: React.FC<IHeaderProps> = ({
             </button>
             <input
               type="text"
-              {...register("searchTerm", {
-                required: false,
-              })}
+              {...register("searchTerm")}
+              placeholder="searchTerm"
+              onBlur={() => setIsShowingSearchBar(false)}
               className="w-9/12 border-none focus:outline-none pl-3 text-md text-black border-2 border-gray-800 my-3 rounded-md"
             />
             <button>
@@ -85,7 +92,7 @@ export const Header: React.FC<IHeaderProps> = ({
             </button>
           </div>
         ) : (
-          <div className="flex flex-row justify-between">
+          <div className="flex flex-row justify-between h-14">
             <Link to="/">
               <img
                 className="hidden ml-5 w-32 md:block"
@@ -96,7 +103,7 @@ export const Header: React.FC<IHeaderProps> = ({
             </Link>
             <div className="mt-4 mr-3">
               <FontAwesomeIcon
-                className="object-left border-1 border-red-800"
+                className="cursor-pointer object-left border-1 border-red-800"
                 size="1x"
                 icon={faSearch}
                 onClick={() => {
@@ -105,7 +112,7 @@ export const Header: React.FC<IHeaderProps> = ({
               />
               <FontAwesomeIcon
                 onClick={() => setIsModalOpen((prev) => !prev)}
-                className="ml-3"
+                className="ml-3 cursor-pointer"
                 icon={faUser}
               />
             </div>

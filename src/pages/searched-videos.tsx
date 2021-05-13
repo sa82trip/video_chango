@@ -1,10 +1,17 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import ReactModal from "react-modal";
 import ReactPlayer from "react-player";
 import { useParams } from "react-router-dom";
 import youtubeSearch, { YouTubeSearchResults } from "youtube-search";
 import { LoggedInUserCtx } from "../components/App";
 import { ISearchedVideo, SearchedVideo } from "../components/searched_video";
+import { Vid_block_type } from "../components/vid_player";
 import { firestore } from "../firebase";
 import { customStyles } from "../styles/modalStyle";
 
@@ -12,7 +19,15 @@ interface SearchedVideosParam {
   searchTerm: string;
 }
 
-export const SearchedVideos = () => {
+interface ISearchedVideos {
+  setFetchedVids: Dispatch<SetStateAction<Vid_block_type[]>>;
+  fetchedVids: Vid_block_type[];
+}
+
+export const SearchedVideos: React.FunctionComponent<ISearchedVideos> = ({
+  setFetchedVids,
+  fetchedVids,
+}) => {
   const params = useParams<SearchedVideosParam>();
   const [searchedVideos, setSearchedVideos] = useState<ISearchedVideo[]>([]);
   const [IsModalOpen, setIsOpen] = useState(false);
@@ -112,13 +127,33 @@ export const SearchedVideos = () => {
         .then((data) => {
           console.log(data);
           if (setSearchedVideos !== undefined) {
-            const newVidList = [...searchedVideos, videoThatWillWatchLater];
-            setSearchedVideos(newVidList);
+            const mappedVideo = ISearchedVideoToVidmapper(
+              videoThatWillWatchLater
+            );
+            //const newVidList = [...fetchedVids, videoThatWillWatchLater];
+            setFetchedVids([...fetchedVids, mappedVideo]);
           }
         });
     } else {
       console.log("no right url");
     }
+  };
+  const ISearchedVideoToVidmapper = ({
+    url,
+    id,
+    title,
+    createdAt,
+  }: ISearchedVideo): Vid_block_type => {
+    return {
+      url,
+      userEmail: loggedInUserCtx?.email!,
+      id,
+      title,
+      playedSeconds: 0,
+      archived: false,
+      rating: 3,
+      createdAt,
+    };
   };
   if (searchedVideos) {
     return (
@@ -134,6 +169,7 @@ export const SearchedVideos = () => {
                 url={videoForModal.url}
                 width="100%"
                 height="100%"
+                controls={true}
                 playing={true}
                 onPlay={() => {
                   addVideoToWatchLaterList(videoForModal);
